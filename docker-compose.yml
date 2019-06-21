@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+  nextjs:
+    image: node:8.15.0-alpine
+    container_name: nextjs
+    ports:
+      - "3000"
+    volumes:
+      - ./nextjs:/app/nextjs
+      - ./nginx/logs/nextjs/npm:/root/.npm/_logs
+    working_dir: /app/nextjs
+    command: >
+      /bin/sh -c "npm install -f&&
+        npm run build &&
+        npm run start"
+    networks:
+      - internalnetwork
+  server:
+    image: nginx
+    container_name: server
+    ports:
+      - 80:80
+    volumes:
+      #
+      # Import our Nginx configuration for FPM.
+      #
+      - ./nginx/config/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/config/mime.types:/etc/nginx/conf/mime.types
+      - ./nginx/config/proxy.conf:/etc/nginx/proxy.conf
+      - ./nginx/config/fastcgi.conf:/etc/nginx/fastcgi.conf
+      - ./nginx/config/default.conf:/etc/nginx/conf.d/default.conf
+      - ./nginx/logs/nginx:/var/log/nginx
+      - ./vhosts/website.name:/var/www/website.name/public
+    restart: always
+    networks:
+      - internalnetwork
+
+networks:
+  internalnetwork:
