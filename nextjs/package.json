@@ -6,7 +6,7 @@
     "production-start": "npm install -f && npm run build && npm run start"
   },
   "dependencies": {
-    "next": "7.0.2",
+    "next": "9.3.3",
     "react": "16.7.0",
     "react-dom": "16.7.0"
   }
